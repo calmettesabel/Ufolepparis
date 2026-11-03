@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Championnat UFOLEP Paris 2026/27</title>
+    <meta name="theme-color" content="#0f1d4a">
+    <link rel="icon" type="image/png" href="/images/ufolep-paris-logo.png">
+    <link rel="apple-touch-icon" href="/images/ufolep-paris-logo.png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;850&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        // Collectif Möketa colours: royal blue backgrounds...
+                        slate: {
+                            50: '#eef3ff', 100: '#dbe5ff', 200: '#bccdfb', 300: '#9db2f0', 400: '#7f96dc',
+                            500: '#5f77c2', 600: '#40589f', 700: '#2d4489', 800: '#213677', 900: '#172a63', 950: '#0f1d4a',
+                        },
+                        // ...and Möketa yellow accents
+                        emerald: {
+                            50: '#fffde6', 100: '#fff9c2', 200: '#fff38a', 300: '#fff04d', 400: '#ffed00',
+                            500: '#f5dc00', 600: '#ffd500', 700: '#c9a800', 800: '#8a7400', 900: '#5c4d00', 950: '#2e2700',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-text-size-adjust: 100%; }
+        /* Phones: 16px fields so iOS does not zoom in when typing a score or password */
+        @media (max-width: 639px) {
+            input, select { font-size: 16px !important; }
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Custom scrollbar for tables */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f1d4a; }
+        ::-webkit-scrollbar-thumb { background: #40589f; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ffd500; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-full flex flex-col selection:bg-emerald-400 selection:text-slate-950">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-950 border-b-2 border-emerald-500 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between gap-3 h-16 sm:h-20">
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <img src="/images/ufolep-paris-logo.png" alt="Logo UFOLEP Paris" class="h-10 sm:h-14 w-auto flex-shrink-0 drop-shadow-lg">
+                    <div class="min-w-0">
+                        <h1 class="text-lg sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                            <span class="truncate">Championnat UFOLEP Paris</span> <span class="hidden sm:inline text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 whitespace-nowrap">UFOLEP 2026-27</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 font-medium truncate"><span class="sm:hidden">UFOLEP 2026-27 · Foot à 11</span><span class="hidden sm:inline">Championnat Foot à 11, Coupe & Playoffs (9 Équipes)</span></p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs & Admin Toggle -->
+                <div class="flex items-center space-x-3 flex-shrink-0">
+                    <nav class="hidden md:flex space-x-1 bg-slate-900 p-1.5 rounded-xl border border-slate-800">
+                        <button onclick="switchTab('championnat')" id="btn-tab-championnat" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 bg-emerald-600 text-slate-950 shadow">
+                            <i class="fa-solid fa-trophy"></i> Championnat
+                        </button>
+                        <button onclick="switchTab('coupe')" id="btn-tab-coupe" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                            <i class="fa-solid fa-shield-halved"></i> Coupe (9 Équipes)
+                        </button>
+                        <button onclick="switchTab('playoffs')" id="btn-tab-playoffs" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                            <i class="fa-solid fa-ranking-star"></i> Playoffs
+                        </button>
+                        <button onclick="switchTab('equipes')" id="btn-tab-equipes" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                            <i class="fa-solid fa-users"></i> Équipes
+                        </button>
+                    </nav>
+
+                    <!-- Admin Auth Button -->
+                    <button onclick="toggleAdminModal()" id="admin-badge-btn" title="Mode Admin" class="flex items-center gap-2 px-3 sm:px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-bold border transition-all bg-slate-900 border-slate-700 text-slate-300 hover:border-emerald-500 hover:text-emerald-400">
+                        <i class="fa-solid fa-lock" id="admin-lock-icon"></i>
+                        <span id="admin-badge-text" class="hidden sm:inline">Mode Admin</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Navigation bar -->
+        <div class="md:hidden flex gap-1 border-t border-slate-800 bg-slate-950 px-2 py-1.5 justify-around">
+            <button onclick="switchTab('championnat')" id="m-btn-tab-championnat" class="flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all bg-emerald-600 text-slate-950">
+                <i class="fa-solid fa-trophy block mb-1"></i> Championnat
+            </button>
+            <button onclick="switchTab('coupe')" id="m-btn-tab-coupe" class="flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all text-slate-400">
+                <i class="fa-solid fa-shield-halved block mb-1"></i> Coupe
+            </button>
+            <button onclick="switchTab('playoffs')" id="m-btn-tab-playoffs" class="flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all text-slate-400">
+                <i class="fa-solid fa-ranking-star block mb-1"></i> Playoffs
+            </button>
+            <button onclick="switchTab('equipes')" id="m-btn-tab-equipes" class="flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all text-slate-400">
+                <i class="fa-solid fa-users block mb-1"></i> Équipes
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+
+        <!-- ==================== CHAMPIONNAT TAB ==================== -->
+        <section id="tab-championnat" class="tab-content active space-y-5 sm:space-y-8">
+            <!-- Rules Banner -->
+            <div class="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700/80 rounded-2xl p-4 sm:p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="space-y-1 text-center md:text-left">
+                    <h2 class="text-lg font-bold text-white flex items-center justify-center md:justify-start gap-2">
+                        <i class="fa-solid fa-circle-info text-emerald-400"></i> Règlement UFOLEP 2026-2027
+                    </h2>
+                    <p class="text-sm text-slate-300">Barème officiel du championnat : <span class="font-bold text-emerald-400">Victoire = 4 pts</span> | <span class="font-bold text-amber-400">Nul = 2 pts</span> | <span class="font-bold text-rose-400">Défaite = 1 pt</span></p>
+                </div>
+                <div class="flex flex-wrap items-center justify-center md:justify-end gap-2 sm:gap-3 text-xs font-semibold">
+                    <span class="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span> 1er-3e : Demi-finales Playoffs</span>
+                    <span class="px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span> 4e-5e : Quart de finale Playoffs</span>
+                    <span class="px-3 py-1.5 rounded-lg bg-slate-700/50 text-slate-300 border border-slate-600 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span> 6e-9e : Non qualifiés</span>
+                </div>
+            </div>
+
+            <!-- Standings & Stats Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8">
+                <!-- Classement Table (8 Cols) -->
+                <div class="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl shadow-xl overflow-hidden flex flex-col">
+                    <div class="p-4 sm:p-5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 bg-slate-900/50">
+                        <h3 class="font-bold text-base sm:text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-medal text-amber-400"></i> Classement Saison Régulière
+                        </h3>
+                        <span id="match-played-count" class="text-xs font-medium text-slate-400 bg-slate-800 px-3 py-1 rounded-full">Calculé en direct</span>
+                    </div>
+                    <div class="overflow-x-auto flex-grow">
+                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                            <thead>
+                                <tr class="bg-slate-900/85 text-slate-400 text-xs font-semibold uppercase tracking-wider border-b border-slate-800">
+                                    <th class="py-3 sm:py-3.5 px-1.5 sm:px-3 text-center w-8 sm:w-12">#</th>
+                                    <th class="py-3 sm:py-3.5 px-1.5 sm:px-4">Équipe</th>
+                                    <th class="py-3 sm:py-3.5 px-1 sm:px-2 text-center w-7 sm:w-10" title="Matchs Joués">MJ</th>
+                                    <th class="py-3 sm:py-3.5 px-1 sm:px-2 text-center w-7 sm:w-10" title="Victoires">V</th>
+                                    <th class="py-3 sm:py-3.5 px-1 sm:px-2 text-center w-7 sm:w-10" title="Nuls">N</th>
+                                    <th class="py-3 sm:py-3.5 px-1 sm:px-2 text-center w-7 sm:w-10" title="Défaites">D</th>
+                                    <th class="py-3 sm:py-3.5 px-1 sm:px-2 text-center w-9 sm:w-12" title="Différence de buts">Diff</th>
+                                    <th class="py-3 sm:py-3.5 px-1.5 sm:px-3 text-center w-9 sm:w-14 font-extrabold text-emerald-400" title="Points (V:4, N:2, D:1)">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody id="standings-tbody" class="divide-y divide-slate-800/60 font-medium">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Match Results & Calendar (5 Cols) -->
+                <div class="lg:col-span-5 bg-slate-950 border border-slate-800 rounded-2xl shadow-xl overflow-hidden flex flex-col">
+                    <div class="p-4 sm:p-5 border-b border-slate-800 bg-slate-900/50 flex flex-col gap-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h3 class="font-bold text-base sm:text-lg text-white flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-emerald-400"></i> Calendrier & Résultats
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <span id="admin-status-badge" class="hidden text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">Mode Édition Actif</span>
+                            </div>
+                        </div>
+                        <!-- Filters -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="filter-journee" onchange="renderMatches()" class="min-w-0 bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-2.5 sm:py-2 font-medium focus:outline-none focus:border-emerald-500">
+                                <!-- Populated by JS -->
+                            </select>
+                            <select id="filter-equipe" onchange="renderMatches()" class="min-w-0 bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-2.5 sm:py-2 font-medium focus:outline-none focus:border-emerald-500">
+                                <option value="all">Toutes les équipes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Matches List Container -->
+                    <div id="matches-container" class="p-3 sm:p-4 space-y-3 lg:overflow-y-auto lg:max-h-[500px]">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== COUPE TAB ==================== -->
+        <section id="tab-coupe" class="tab-content space-y-5 sm:space-y-8">
+            <div class="bg-gradient-to-r from-blue-700/50 via-slate-900 to-slate-900 border border-emerald-500/30 rounded-2xl p-4 sm:p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
+                <div class="space-y-2">
+                    <span class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">Coupe Officielle 2026-2027</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Tableau de la Coupe (9 Équipes)</h2>
+                    <p class="text-sm text-slate-300">Format pour 9 équipes : un huitième de finale (Boca Senior – La Pègre), quarts, demi-finales et finale le 14 juin 2027. En cas d'égalité, le vainqueur est désigné aux tirs au but.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="resetCupScores()" id="reset-cup-btn" class="hidden px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition shadow">
+                        Réinitialiser la Coupe
+                    </button>
+                    <div class="bg-slate-950 border border-slate-800 px-4 py-3 rounded-xl text-center">
+                        <span class="block text-xs text-slate-400">Équipes Engagées</span>
+                        <span class="text-xl font-black text-emerald-400">9 / 9</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cup Rounds Grid / Tree Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Tour Préliminaire -->
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col shadow-lg">
+                    <div class="border-b border-slate-800 pb-3 mb-4 flex items-center justify-between">
+                        <h3 class="font-bold text-white text-sm uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-slate-800 text-emerald-400 flex items-center justify-center text-[10px]">1/8</span> Huitième
+                        </h3>
+                        <span class="text-xs text-slate-400 font-medium">1 Match</span>
+                    </div>
+                    <div id="cup-round-prelim" class="space-y-4 flex-grow">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Quarts de Finale -->
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col shadow-lg">
+                    <div class="border-b border-slate-800 pb-3 mb-4 flex items-center justify-between">
+                        <h3 class="font-bold text-white text-sm uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-slate-800 text-emerald-400 flex items-center justify-center text-[10px]">1/4</span> Quarts de Finale
+                        </h3>
+                        <span class="text-xs text-slate-400 font-medium">4 Matchs</span>
+                    </div>
+                    <div id="cup-round-quarts" class="space-y-4 flex-grow">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Demi-Finales -->
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col shadow-lg">
+                    <div class="border-b border-slate-800 pb-3 mb-4 flex items-center justify-between">
+                        <h3 class="font-bold text-white text-sm uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-slate-800 text-emerald-400 flex items-center justify-center text-[10px]">1/2</span> Demi-Finales
+                        </h3>
+                        <span class="text-xs text-slate-400 font-medium">2 Matchs</span>
+                    </div>
+                    <div id="cup-round-demis" class="space-y-4 flex-grow">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Grande Finale -->
+                <div class="bg-slate-950 border border-emerald-500/40 rounded-2xl p-5 flex flex-col shadow-xl bg-gradient-to-b from-slate-950 to-blue-800/30">
+                    <div class="border-b border-slate-800 pb-3 mb-4 flex items-center justify-between">
+                        <h3 class="font-bold text-amber-400 text-sm uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-trophy"></i> Grande Finale
+                        </h3>
+                        <span class="text-xs text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">Titre</span>
+                    </div>
+                    <div id="cup-round-finale" class="space-y-4 flex-grow flex flex-col justify-center">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PLAYOFFS TAB ==================== -->
+        <section id="tab-playoffs" class="tab-content space-y-5 sm:space-y-8">
+            <div class="bg-gradient-to-r from-blue-700/50 via-slate-900 to-slate-900 border border-amber-500/30 rounded-2xl p-4 sm:p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
+                <div class="space-y-2">
+                    <span class="text-xs font-bold px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-wider">Phase Finale du Championnat</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Playoffs (Top 5)</h2>
+                    <p class="text-sm text-slate-300">Les 5 premiers de la saison régulière se qualifient. Le 4e et le 5e s'affrontent en quart de finale, le vainqueur rejoint le 1er en demi-finale ; le 2e affronte le 3e. Le tableau se met à jour automatiquement après chaque journée.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="resetPlayoffScores()" id="reset-playoffs-btn" class="hidden px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition shadow">
+                        Réinitialiser les Playoffs
+                    </button>
+                    <div class="bg-slate-950 border border-slate-800 px-4 py-3 rounded-xl text-center min-w-[150px]">
+                        <span class="block text-xs text-slate-400">Saison régulière</span>
+                        <span id="playoffs-progress" class="text-xl font-black text-amber-400">0 / 108</span>
+                        <span class="block text-[10px] text-slate-500">matchs joués</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Qualification race -->
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+                <div class="p-4 sm:p-5 border-b border-slate-800 bg-slate-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <h3 class="font-bold text-base sm:text-lg text-white flex items-center gap-2">
+                        <i class="fa-solid fa-flag-checkered text-amber-400"></i> Course à la qualification
+                    </h3>
+                    <span id="playoffs-status" class="text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20"></span>
+                </div>
+                <div id="playoffs-seeds" class="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    <!-- Populated by JS -->
+                </div>
+                <div id="playoffs-chasers" class="px-3 sm:px-4 pb-4 text-xs text-slate-400">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Playoff bracket -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col shadow-lg">
+                    <div class="border-b border-slate-800 pb-3 mb-4 flex items-center justify-between">
+                        <h3 class="font-bold text-white text-sm uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-slate-800 text-amber-400 flex items-center justify-center text-[10px]">1/4</span> Quart de Finale
+                        </h3>
+                        <span class="text-xs text-slate-400 font-medium">4e vs 5e</span>
+                    </div>
+                    <div id="playoffs-round-quart" class="space-y-4 flex-grow"></div>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col shadow-lg">
+                    <div class="border-b border-slate-800 pb-3 mb-4 flex items-center justify-between">
+                        <h3 class="font-bold text-white text-sm uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-slate-800 text-amber-400 flex items-center justify-center text-[10px]">1/2</span> Demi-Finales
+                        </h3>
+                        <span class="text-xs text-slate-400 font-medium">2 Matchs</span>
+                    </div>
+                    <div id="playoffs-round-demis" class="space-y-4 flex-grow"></div>
+                </div>
+                <div class="bg-slate-950 border border-amber-500/40 rounded-2xl p-5 flex flex-col shadow-xl bg-gradient-to-b from-slate-950 to-blue-800/30">
+                    <div class="border-b border-slate-800 pb-3 mb-4 flex items-center justify-between">
+                        <h3 class="font-bold text-amber-400 text-sm uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-trophy"></i> Finales
+                        </h3>
+                        <span class="text-xs text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">Titre</span>
+                    </div>
+                    <div id="playoffs-round-finale" class="space-y-4 flex-grow"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ÉQUIPES TAB ==================== -->
+        <section id="tab-equipes" class="tab-content space-y-5 sm:space-y-8">
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl">
+                <h2 class="text-xl sm:text-2xl font-extrabold text-white mb-2">Les 9 Équipes du Championnat & Coupe</h2>
+                <p class="text-sm text-slate-400 mb-6">Présentation officielle des clubs engagés pour la saison 2026-2027.</p>
+                <div id="teams-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Admin Login / Control Modal -->
+    <div id="admin-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative space-y-6 max-h-[90vh] overflow-y-auto">
+            <button onclick="toggleAdminModal()" aria-label="Fermer" class="absolute top-3 right-3 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="admin-login-view" class="space-y-4">
+                <div class="text-center space-y-2">
+                    <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl mx-auto flex items-center justify-center border border-emerald-500/30 text-xl font-bold">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Connexion Administrateur</h3>
+                    <p class="text-xs text-slate-400">Entrez le mot de passe administrateur pour saisir les scores (championnat, coupe et playoffs).</p>
+                </div>
+                <div class="space-y-3">
+                    <input type="password" id="admin-password-input" placeholder="Mot de passe" onkeydown="if(event.key==='Enter') verifyAdminPassword()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    <button onclick="verifyAdminPassword()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-600/20">
+                        Se connecter
+                    </button>
+                    <p id="admin-error-msg" class="text-xs text-rose-400 text-center hidden">Mot de passe incorrect.</p>
+                </div>
+            </div>
+
+            <div id="admin-panel-view" class="space-y-6 hidden">
+                <div class="text-center space-y-1">
+                    <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl mx-auto flex items-center justify-center border border-emerald-500/30 text-xl font-bold">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Panneau Administrateur</h3>
+                    <p class="text-xs text-emerald-400 font-medium">Vous êtes connecté en mode édition.</p>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <button onclick="exportDataJSON()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold rounded-xl text-xs transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download text-emerald-400"></i> Exporter les données (JSON)
+                    </button>
+                    <label class="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-upload text-emerald-400"></i> Importer des données (JSON)
+                        <input type="file" id="import-file-input" accept=".json" onchange="importDataJSON(event)" class="hidden">
+                    </label>
+                    <button onclick="resetAllData()" class="w-full py-3 bg-rose-950/40 hover:bg-rose-900/50 border border-rose-800/60 text-rose-300 font-semibold rounded-xl text-xs transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Réinitialiser toutes les données
+                    </button>
+                </div>
+
+                <div class="border-t border-slate-800 pt-4 space-y-3">
+                    <div>
+                        <h4 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-image text-emerald-400"></i> Logos des équipes</h4>
+                        <p class="text-xs text-slate-400">PNG, JPEG ou WebP. Les logos sont visibles par tous les visiteurs.</p>
+                    </div>
+                    <div id="admin-logos-list" class="space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-800 pt-4 flex items-center justify-between">
+                    <button onclick="logoutAdmin()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">
+                        Se déconnecter
+                    </button>
+                    <button onclick="toggleAdminModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-xl transition">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-6 text-center text-xs text-slate-500 space-y-1">
+        <p>Championnat UFOLEP Paris 2026/27 • Foot à 11</p>
+        <p>Barème officiel : Victoire = 4 pts | Nul = 2 pts | Défaite = 1 pt • Top 5 qualifié pour les Playoffs</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- DATA DEFINITION ---
+        const TEAMS = [
+            { id: "moketa", name: "Collectif Möketa", short: "MOK", defaultLogo: "/images/moketa-logo.png", color: "#1d4ed8", badgeColor: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
+            { id: "82united", name: "82 United", short: "82U", defaultLogo: "/images/teams/82united.webp", color: "#3b82f6", badgeColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+            { id: "ase19", name: "ASE19", short: "ASE", defaultLogo: "/images/teams/ase19.webp", color: "#eab308", badgeColor: "bg-amber-500/20 text-amber-400 border-amber-500/30" },
+            { id: "boca", name: "Boca Senior", short: "BOC", defaultLogo: "/images/teams/boca.svg", color: "#a855f7", badgeColor: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
+            { id: "montval", name: "FC Montval", short: "FCM", defaultLogo: "/images/teams/montval.webp", color: "#ec4899", badgeColor: "bg-pink-500/20 text-pink-400 border-pink-500/30" },
+            { id: "palais", name: "FC Palais", short: "FCP", defaultLogo: "/images/teams/palais.webp", color: "#06b6d4", badgeColor: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30" },
+            { id: "pagre", name: "La Pègre", short: "PGR", defaultLogo: "/images/teams/pagre.webp", color: "#f97316", badgeColor: "bg-orange-500/20 text-orange-400 border-orange-500/30" },
+            { id: "vasco", name: "Vasco de Gamins", short: "VAS", defaultLogo: "/images/teams/vasco.webp", color: "#6366f1", badgeColor: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30" },
+            { id: "watford", name: "Watford", short: "WAT", defaultLogo: "/images/teams/watford.webp", color: "#ef4444", badgeColor: "bg-rose-500/20 text-rose-400 border-rose-500/30" }
+        ];
+
+        const VENUES = { lenglen: "Lenglen", ladoumegue: "Ladoumègue", fillettes: "Fillettes (Aubervilliers)" };
+        const KICKOFF = "20h30";
+        const PLAYOFF_SPOTS = 5;
+
+        // Regular season: Aller (A), Retour (R) and Retour-Retour (RR), 9 journées each.
+        // With 9 teams, each journée has 4 matches and 1 team exempt.
+        const PHASES = [
+            { key: "A", label: "Phase Aller" },
+            { key: "R", label: "Phase Retour" },
+            { key: "RR", label: "Phase Retour-Retour" }
+        ];
+        const JOURNEES = PHASES.flatMap(p => Array.from({ length: 9 }, (_, i) => p.key + (i + 1)));
+
+        function m(journee, date, venue, home, away) {
+            return { journee, date, venue, home, away };
+        }
+
+        // Official calendar 2026-2027 (Matchs - Vision globale)
+        const CHAMPIONSHIP_MATCHES = [
+            m("A1", "2026-10-02", "lenglen", "ase19", "82united"),
+            m("A1", "2026-10-05", "lenglen", "montval", "moketa"),
+            m("A1", "2026-10-05", "ladoumegue", "watford", "pagre"),
+            m("A1", "2026-10-05", "fillettes", "vasco", "palais"),
+            m("A2", "2026-10-09", "lenglen", "watford", "82united"),
+            m("A2", "2026-10-12", "lenglen", "boca", "vasco"),
+            m("A2", "2026-10-12", "ladoumegue", "ase19", "moketa"),
+            m("A2", "2026-10-12", "fillettes", "pagre", "montval"),
+            m("A3", "2026-10-16", "lenglen", "palais", "82united"),
+            m("A3", "2026-10-19", "lenglen", "pagre", "vasco"),
+            m("A3", "2026-10-19", "ladoumegue", "watford", "ase19"),
+            m("A3", "2026-10-19", "fillettes", "boca", "moketa"),
+            m("A4", "2026-10-23", "lenglen", "palais", "ase19"),
+            m("A4", "2026-10-26", "lenglen", "watford", "vasco"),
+            m("A4", "2026-10-26", "ladoumegue", "pagre", "82united"),
+            m("A4", "2026-10-26", "fillettes", "boca", "montval"),
+            m("A5", "2026-10-30", "lenglen", "vasco", "montval"),
+            m("A5", "2026-11-02", "lenglen", "palais", "watford"),
+            m("A5", "2026-11-02", "ladoumegue", "moketa", "82united"),
+            m("A5", "2026-11-02", "fillettes", "boca", "pagre"),
+            m("A6", "2026-11-06", "lenglen", "pagre", "ase19"),
+            m("A6", "2026-11-09", "lenglen", "moketa", "palais"),
+            m("A6", "2026-11-09", "ladoumegue", "boca", "82united"),
+            m("A6", "2026-11-09", "fillettes", "ase19", "montval"),
+            m("A7", "2026-11-13", "lenglen", "vasco", "82united"),
+            m("A7", "2026-11-16", "lenglen", "boca", "watford"),
+            m("A7", "2026-11-16", "ladoumegue", "palais", "montval"),
+            m("A7", "2026-11-16", "fillettes", "moketa", "vasco"),
+            m("A8", "2026-11-20", "lenglen", "watford", "montval"),
+            m("A8", "2026-11-23", "lenglen", "boca", "palais"),
+            m("A8", "2026-11-23", "ladoumegue", "vasco", "ase19"),
+            m("A8", "2026-11-23", "fillettes", "pagre", "moketa"),
+            m("A9", "2026-11-27", "lenglen", "palais", "pagre"),
+            m("A9", "2026-11-30", "lenglen", "82united", "montval"),
+            m("A9", "2026-11-30", "ladoumegue", "boca", "ase19"),
+            m("A9", "2026-11-30", "fillettes", "watford", "moketa"),
+            m("R1", "2026-12-04", "lenglen", "82united", "ase19"),
+            m("R1", "2026-12-07", "lenglen", "pagre", "watford"),
+            m("R1", "2026-12-07", "ladoumegue", "palais", "vasco"),
+            m("R1", "2026-12-07", "fillettes", "moketa", "montval"),
+            m("R2", "2026-12-11", "lenglen", "82united", "watford"),
+            m("R2", "2026-12-14", "lenglen", "vasco", "boca"),
+            m("R2", "2026-12-14", "ladoumegue", "montval", "pagre"),
+            m("R2", "2026-12-14", "fillettes", "moketa", "ase19"),
+            m("R3", "2026-12-18", "lenglen", "ase19", "watford"),
+            m("R3", "2027-01-04", "lenglen", "moketa", "boca"),
+            m("R3", "2027-01-04", "ladoumegue", "82united", "palais"),
+            m("R3", "2027-01-04", "fillettes", "vasco", "pagre"),
+            m("R4", "2027-01-08", "lenglen", "ase19", "palais"),
+            m("R4", "2027-01-11", "lenglen", "vasco", "watford"),
+            m("R4", "2027-01-11", "ladoumegue", "montval", "boca"),
+            m("R4", "2027-01-11", "fillettes", "82united", "pagre"),
+            m("R5", "2027-01-15", "lenglen", "pagre", "boca"),
+            m("R5", "2027-01-18", "lenglen", "montval", "vasco"),
+            m("R5", "2027-01-18", "ladoumegue", "82united", "moketa"),
+            m("R5", "2027-01-18", "fillettes", "watford", "palais"),
+            m("R6", "2027-01-22", "lenglen", "ase19", "pagre"),
+            m("R6", "2027-01-25", "lenglen", "montval", "palais"),
+            m("R6", "2027-01-25", "ladoumegue", "vasco", "moketa"),
+            m("R6", "2027-01-25", "fillettes", "82united", "boca"),
+            m("R7", "2027-01-29", "lenglen", "82united", "vasco"),
+            m("R7", "2027-02-01", "lenglen", "palais", "moketa"),
+            m("R7", "2027-02-01", "ladoumegue", "montval", "ase19"),
+            m("R7", "2027-02-01", "fillettes", "watford", "boca"),
+            m("R8", "2027-02-05", "lenglen", "montval", "watford"),
+            m("R8", "2027-02-08", "lenglen", "moketa", "pagre"),
+            m("R8", "2027-02-08", "ladoumegue", "palais", "boca"),
+            m("R8", "2027-02-08", "fillettes", "ase19", "vasco"),
+            m("R9", "2027-02-12", "lenglen", "pagre", "palais"),
+            m("R9", "2027-02-22", "lenglen", "moketa", "watford"),
+            m("R9", "2027-02-22", "ladoumegue", "ase19", "boca"),
+            m("R9", "2027-02-22", "fillettes", "montval", "82united"),
+            m("RR1", "2027-02-26", "lenglen", "82united", "ase19"),
+            m("RR1", "2027-03-01", "lenglen", "palais", "vasco"),
+            m("RR1", "2027-03-01", "ladoumegue", "pagre", "watford"),
+            m("RR1", "2027-03-01", "fillettes", "moketa", "montval"),
+            m("RR2", "2027-03-05", "lenglen", "moketa", "ase19"),
+            m("RR2", "2027-03-08", "lenglen", "82united", "watford"),
+            m("RR2", "2027-03-08", "ladoumegue", "montval", "pagre"),
+            m("RR2", "2027-03-08", "fillettes", "vasco", "boca"),
+            m("RR3", "2027-03-12", "lenglen", "moketa", "boca"),
+            m("RR3", "2027-03-15", "lenglen", "vasco", "pagre"),
+            m("RR3", "2027-03-15", "ladoumegue", "82united", "palais"),
+            m("RR3", "2027-03-15", "fillettes", "ase19", "watford"),
+            m("RR4", "2027-03-19", "lenglen", "82united", "pagre"),
+            m("RR4", "2027-03-22", "lenglen", "montval", "boca"),
+            m("RR4", "2027-03-22", "ladoumegue", "vasco", "watford"),
+            m("RR4", "2027-03-22", "fillettes", "ase19", "palais"),
+            m("RR5", "2027-03-26", "lenglen", "82united", "moketa"),
+            m("RR5", "2027-04-12", "lenglen", "pagre", "boca"),
+            m("RR5", "2027-04-12", "ladoumegue", "montval", "vasco"),
+            m("RR5", "2027-04-12", "fillettes", "watford", "palais"),
+            m("RR6", "2027-04-16", "lenglen", "82united", "boca"),
+            m("RR6", "2027-04-19", "lenglen", "montval", "palais"),
+            m("RR6", "2027-04-19", "ladoumegue", "vasco", "moketa"),
+            m("RR6", "2027-04-19", "fillettes", "ase19", "pagre"),
+            m("RR7", "2027-04-23", "lenglen", "82united", "vasco"),
+            m("RR7", "2027-04-26", "lenglen", "watford", "boca"),
+            m("RR7", "2027-04-26", "ladoumegue", "montval", "ase19"),
+            m("RR7", "2027-04-26", "fillettes", "palais", "moketa"),
+            m("RR8", "2027-04-30", "lenglen", "montval", "watford"),
+            m("RR8", "2027-05-03", "lenglen", "moketa", "pagre"),
+            m("RR8", "2027-05-03", "ladoumegue", "palais", "boca"),
+            m("RR8", "2027-05-03", "fillettes", "ase19", "vasco"),
+            m("RR9", "2027-05-07", "lenglen", "montval", "82united"),
+            m("RR9", "2027-05-10", "lenglen", "ase19", "boca"),
+            m("RR9", "2027-05-10", "ladoumegue", "moketa", "watford"),
+            m("RR9", "2027-05-10", "fillettes", "pagre", "palais"),
+        ].map((match, idx, all) => {
+            const number = all.slice(0, idx + 1).filter(x => x.journee === match.journee).length;
+            return { ...match, id: `${match.journee}_${number}` };
+        });
+
+        // Cup bracket (Coupe 9 équipes). A slot is a fixed team, or the winner/loser of a previous match.
+        const CUP_MATCHES = [
+            { id: "CUP_8A", code: "1/8", round: "Huitième de finale", date: "2027-05-14", venue: "lenglen", home: { team: "boca" }, away: { team: "pagre" } },
+            { id: "CUP_4A", code: "1/4 A", round: "Quart de finale A", date: "2027-05-21", venue: "lenglen", home: { winner: "CUP_8A" }, away: { team: "vasco" } },
+            { id: "CUP_4B", code: "1/4 B", round: "Quart de finale B", date: "2027-05-24", venue: "lenglen", home: { team: "palais" }, away: { team: "watford" } },
+            { id: "CUP_4C", code: "1/4 C", round: "Quart de finale C", date: "2027-05-24", venue: "ladoumegue", home: { team: "ase19" }, away: { team: "moketa" } },
+            { id: "CUP_4D", code: "1/4 D", round: "Quart de finale D", date: "2027-05-24", venue: "fillettes", home: { team: "montval" }, away: { team: "82united" } },
+            { id: "CUP_2A", code: "1/2 A", round: "Demi-finale A", date: "2027-05-31", venue: "ladoumegue", home: { winner: "CUP_4A" }, away: { winner: "CUP_4B" } },
+            { id: "CUP_2B", code: "1/2 B", round: "Demi-finale B", date: "2027-05-31", venue: "fillettes", home: { winner: "CUP_4C" }, away: { winner: "CUP_4D" } },
+            { id: "CUP_F", code: "Finale", round: "Finale", date: "2027-06-14", venue: "ladoumegue", home: { winner: "CUP_2A" }, away: { winner: "CUP_2B" } }
+        ];
+
+        // Playoffs (Play Off 5 équipes): seeds come from the live regular-season standings
+        const PLAYOFF_MATCHES = [
+            { id: "PO_4A", code: "1/4", round: "Quart de finale", date: "2027-06-04", venue: "lenglen", home: { seed: 4 }, away: { seed: 5 } },
+            { id: "PO_2A", code: "1/2 A", round: "Demi-finale A", date: "2027-06-07", venue: "ladoumegue", home: { seed: 1 }, away: { winner: "PO_4A" } },
+            { id: "PO_2B", code: "1/2 B", round: "Demi-finale B", date: "2027-06-07", venue: "fillettes", home: { seed: 2 }, away: { seed: 3 } },
+            { id: "PO_F", code: "Finale", round: "Finale", date: "2027-06-21", venue: "ladoumegue", home: { winner: "PO_2A" }, away: { winner: "PO_2B" } },
+            { id: "PO_PF", code: "Petite finale", round: "Petite finale", date: "2027-06-21", venue: "fillettes", home: { loser: "PO_2A" }, away: { loser: "PO_2B" } }
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let isAdmin = false;
+        let adminToken = sessionStorage.getItem('moketa_admin_token');
+        let teamLogos = {}; // { teamId: { version } } for logos uploaded from the admin panel
+        let results = {};   // { matchId: { homeScore, awayScore, homePens, awayPens } } shared by every visitor
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            populateJourneeFilter();
+            populateTeamFilter();
+            renderTeamsGrid();
+            renderAll();
+            loadResults();
+            loadTeamLogos();
+            restoreAdminSession();
+        };
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('header nav button').forEach(el => {
+                el.classList.remove('bg-emerald-600', 'text-slate-950', 'shadow');
+                el.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-800');
+            });
+            document.querySelectorAll('header .md\\:hidden button').forEach(el => {
+                el.classList.remove('bg-emerald-600', 'text-slate-950');
+                el.classList.add('text-slate-400');
+            });
+
+            document.getElementById('tab-' + tabId).classList.add('active');
+            
+            const btnDesktop = document.getElementById('btn-tab-' + tabId);
+            if(btnDesktop) {
+                btnDesktop.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-800');
+                btnDesktop.classList.add('bg-emerald-600', 'text-slate-950', 'shadow');
+            }
+            const btnMobile = document.getElementById('m-btn-tab-' + tabId);
+            if(btnMobile) {
+                btnMobile.classList.remove('text-slate-400');
+                btnMobile.classList.add('bg-emerald-600', 'text-slate-950');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function getTeam(id) {
+            return TEAMS.find(t => t.id === id) || { name: id, short: id, color: '#64748b', badgeColor: 'bg-slate-800 text-slate-300' };
+        }
+
+        function formatDate(isoDate, options = { weekday: 'short', day: 'numeric', month: 'short' }) {
+            return new Date(isoDate + 'T12:00:00').toLocaleDateString('fr-FR', options);
+        }
+
+        function todayIso() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function getResult(matchId) {
+            return results[matchId] || null;
+        }
+        // --- TEAM LOGOS ---
+        function getTeamLogoUrl(team) {
+            const uploaded = teamLogos[team.id];
+            if (uploaded) return `/api/logos/${encodeURIComponent(team.id)}?v=${uploaded.version}`;
+            return team.defaultLogo || null;
+        }
+
+        function teamLogoHtml(team, sizeClasses) {
+            const url = team.id ? getTeamLogoUrl(team) : null;
+            if (url) {
+                return `<img src="${url}" alt="Logo ${team.name}" loading="lazy" class="${sizeClasses} object-contain flex-shrink-0">`;
+            }
+            return `<span class="${sizeClasses} flex-shrink-0 flex items-center justify-center font-extrabold text-white shadow" style="background-color: ${team.color}">${team.short}</span>`;
+        }
+
+        function renderAllTeamViews() {
+            renderTeamsGrid();
+            renderAll();
+            if (isAdmin) renderAdminLogos();
+        }
+
+        async function loadTeamLogos() {
+            try {
+                const res = await fetch('/api/logos');
+                if (!res.ok) return;
+                teamLogos = await res.json();
+                renderAllTeamViews();
+            } catch (err) {
+                // Logos are optional: keep the colored badges if the API is unreachable
+            }
+        }
+
+        function renderAdminLogos() {
+            const list = document.getElementById('admin-logos-list');
+            list.innerHTML = TEAMS.map(t => `
+                <div class="flex items-center gap-3 bg-slate-950 border border-slate-800 rounded-xl p-2.5">
+                    ${teamLogoHtml(t, 'w-9 h-9 rounded-lg text-[10px]')}
+                    <span class="flex-1 text-xs font-semibold text-white truncate">${t.name}</span>
+                    <label class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[11px] font-semibold text-white cursor-pointer transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-upload text-emerald-400"></i> ${teamLogos[t.id] ? 'Changer' : 'Ajouter'}
+                        <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="uploadTeamLogo('${t.id}', this)">
+                    </label>
+                    ${teamLogos[t.id] ? `
+                        <button onclick="deleteTeamLogo('${t.id}')" title="Supprimer le logo" class="px-2 py-1.5 bg-rose-950/40 hover:bg-rose-900/50 border border-rose-800/60 rounded-lg text-[11px] text-rose-300 transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Downscale the picked image so uploads stay small and fast to display
+        function resizeImage(file, maxSize = 400) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+                img.onload = () => {
+                    const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    URL.revokeObjectURL(url);
+                    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('resize')), 'image/png');
+                };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('load')); };
+                img.src = url;
+            });
+        }
+
+        async function uploadTeamLogo(teamId, input) {
+            const file = input.files[0];
+            input.value = '';
+            if (!file) return;
+            try {
+                const blob = await resizeImage(file);
+                const res = await fetch(`/api/logos/${encodeURIComponent(teamId)}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'image/png', 'Authorization': `Bearer ${adminToken}` },
+                    body: blob
+                });
+                await handleLogoResponse(res);
+            } catch (err) {
+                alert("Impossible d'envoyer ce logo. Vérifiez que le fichier est bien une image.");
+            }
+        }
+
+        async function deleteTeamLogo(teamId) {
+            if (!confirm(`Supprimer le logo de ${getTeam(teamId).name} ?`)) return;
+            try {
+                const res = await fetch(`/api/logos/${encodeURIComponent(teamId)}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                await handleLogoResponse(res);
+            } catch (err) {
+                alert("Impossible de supprimer ce logo.");
+            }
+        }
+
+        async function handleLogoResponse(res) {
+            const data = await res.json().catch(() => ({}));
+            if (res.status === 401) {
+                alert("Session administrateur expirée. Veuillez vous reconnecter.");
+                endAdminSession();
+                return;
+            }
+            if (!res.ok) {
+                alert(data.error || "Une erreur est survenue.");
+                return;
+            }
+            teamLogos = data;
+            renderAllTeamViews();
+        }
+
+        function populateJourneeFilter() {
+            const select = document.getElementById('filter-journee');
+            select.innerHTML = '<option value="all">Toutes les journées</option>' + PHASES.map(p => `
+                <optgroup label="${p.label} (${p.key}1 - ${p.key}9)">
+                    ${JOURNEES.filter(j => j.replace(/\d+$/, '') === p.key).map(j => `<option value="${j}">Journée ${j}</option>`).join('')}
+                </optgroup>
+            `).join('');
+            // Open the calendar on the current journée (first one that is not over yet)
+            const today = todayIso();
+            const current = JOURNEES.find(j => CHAMPIONSHIP_MATCHES.some(match => match.journee === j && match.date >= today));
+            select.value = current || 'all';
+        }
+
+        function populateTeamFilter() {
+            const select = document.getElementById('filter-equipe');
+            TEAMS.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.name;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderTeamsGrid() {
+            const grid = document.getElementById('teams-grid');
+            grid.innerHTML = '';
+            TEAMS.forEach(t => {
+                grid.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center space-x-4 shadow-md hover:border-emerald-500/50 transition">
+                        ${teamLogoHtml(t, 'w-14 h-14 rounded-2xl text-lg')}
+                        <div class="space-y-1">
+                            <h3 class="font-bold text-white text-base">${t.name}</h3>
+                            <span class="inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full ${t.badgeColor}">UFOLEP 2026-27</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderAll() {
+            renderStandings();
+            renderMatches();
+            renderCup();
+            renderPlayoffs();
+        }
+
+        // --- SHARED RESULTS (Netlify Database) ---
+        async function loadResults() {
+            try {
+                const res = await fetch('/api/results');
+                if (!res.ok) throw new Error('results');
+                results = await res.json();
+                renderAll();
+            } catch (err) {
+                document.getElementById('match-played-count').textContent = 'Résultats indisponibles';
+            }
+        }
+
+        async function saveResult(matchId, homeScore, awayScore, homePens = null, awayPens = null) {
+            const previous = results[matchId];
+            // Optimistic update so the standings, cup and playoffs react immediately
+            if (homeScore === null || awayScore === null) delete results[matchId];
+            else results[matchId] = { homeScore, awayScore, homePens, awayPens };
+            renderStandings();
+            renderPlayoffs();
+            renderCup();
+
+            try {
+                const res = await fetch(`/api/results/${encodeURIComponent(matchId)}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                    body: JSON.stringify({ homeScore, awayScore, homePens, awayPens })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (res.status === 401) {
+                    alert("Session administrateur expirée. Veuillez vous reconnecter.");
+                    endAdminSession();
+                    throw new Error('auth');
+                }
+                if (!res.ok) {
+                    alert(data.error || "Le score n'a pas pu être enregistré.");
+                    throw new Error('save');
+                }
+                results = data;
+            } catch (err) {
+                if (previous) results[matchId] = previous;
+                else delete results[matchId];
+                renderAll();
+            }
+        }
+
+        async function clearResults(prefix, message) {
+            if (!confirm(message)) return false;
+            try {
+                const url = prefix ? `/api/results?prefix=${encodeURIComponent(prefix)}` : '/api/results';
+                const res = await fetch(url, { method: 'DELETE', headers: { 'Authorization': `Bearer ${adminToken}` } });
+                const data = await res.json().catch(() => ({}));
+                if (res.status === 401) {
+                    alert("Session administrateur expirée. Veuillez vous reconnecter.");
+                    endAdminSession();
+                    return false;
+                }
+                if (!res.ok) {
+                    alert(data.error || "Une erreur est survenue.");
+                    return false;
+                }
+                results = data;
+                renderAll();
+                return true;
+            } catch (err) {
+                alert("Connexion impossible. Réessayez plus tard.");
+                return false;
+            }
+        }
+
+        function parseScoreInput(value) {
+            return value === '' ? null : parseInt(value, 10);
+        }
+
+        // Reads the score inputs of a match; saves only once both scores are filled (or both cleared)
+        function onScoreInput(matchId) {
+            const hs = parseScoreInput(document.getElementById(`home_${matchId}`).value);
+            const as = parseScoreInput(document.getElementById(`away_${matchId}`).value);
+            if ((hs === null) !== (as === null)) return;
+            const homePensEl = document.getElementById(`home_pens_${matchId}`);
+            const awayPensEl = document.getElementById(`away_pens_${matchId}`);
+            const hp = homePensEl ? parseScoreInput(homePensEl.value) : null;
+            const ap = awayPensEl ? parseScoreInput(awayPensEl.value) : null;
+            saveResult(matchId, hs, as, hp, ap);
+        }
+
+        function scoreInputHtml(matchId, side, value, sizeClasses = 'w-10 h-9 text-sm') {
+            return `<input type="number" inputmode="numeric" pattern="[0-9]*" min="0" max="99" value="${value ?? ''}" id="${side}_${matchId}" onchange="onScoreInput('${matchId}')" class="${sizeClasses} bg-slate-950 border border-slate-700 rounded-lg text-center font-bold text-white focus:border-emerald-500 focus:outline-none">`;
+        }
+
+        // --- CHAMPIONNAT CALCULATION (UFOLEP: Win=4, Draw=2, Loss=1) ---
+        function isChampionshipPlayed(match) {
+            return !!getResult(match.id);
+        }
+
+        function calculateStandings() {
+            let stats = {};
+            TEAMS.forEach(t => {
+                stats[t.id] = { id: t.id, name: t.name, played: 0, remaining: 0, won: 0, draw: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, diff: 0, points: 0 };
+            });
+
+            CHAMPIONSHIP_MATCHES.forEach(match => {
+                const home = stats[match.home];
+                const away = stats[match.away];
+                const r = getResult(match.id);
+                if (!r) {
+                    home.remaining++;
+                    away.remaining++;
+                    return;
+                }
+                const hs = r.homeScore;
+                const as = r.awayScore;
+                home.played++;
+                away.played++;
+                home.goalsFor += hs;
+                home.goalsAgainst += as;
+                away.goalsFor += as;
+                away.goalsAgainst += hs;
+
+                if (hs > as) {
+                    home.won++; home.points += 4;
+                    away.lost++; away.points += 1;
+                } else if (hs < as) {
+                    away.won++; away.points += 4;
+                    home.lost++; home.points += 1;
+                } else {
+                    home.draw++; home.points += 2;
+                    away.draw++; away.points += 2;
+                }
+            });
+
+            Object.values(stats).forEach(s => {
+                s.diff = s.goalsFor - s.goalsAgainst;
+                // A loss still gives 1 pt, so the max is 4 pts per remaining match
+                s.maxPoints = s.points + s.remaining * 4;
+            });
+
+            // Sort by Points DESC, then Goal Diff DESC, then Goals For DESC
+            const sorted = Object.values(stats).sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                if (b.diff !== a.diff) return b.diff - a.diff;
+                return b.goalsFor - a.goalsFor;
+            });
+
+            // Mathematical qualification status for the playoffs (top 5)
+            sorted.forEach(s => {
+                const others = sorted.filter(o => o.id !== s.id);
+                s.clinched = others.filter(o => o.maxPoints >= s.points).length < PLAYOFF_SPOTS;
+                s.eliminated = others.filter(o => o.points > s.maxPoints).length >= PLAYOFF_SPOTS;
+            });
+            return sorted;
+        }
+
+        function getSeasonProgress() {
+            const played = CHAMPIONSHIP_MATCHES.filter(isChampionshipPlayed).length;
+            return { played, total: CHAMPIONSHIP_MATCHES.length, finished: played === CHAMPIONSHIP_MATCHES.length };
+        }
+
+        function renderStandings() {
+            const tbody = document.getElementById('standings-tbody');
+            tbody.innerHTML = '';
+            const standings = calculateStandings();
+            const progress = getSeasonProgress();
+            document.getElementById('match-played-count').textContent = `${progress.played} / ${progress.total} matchs joués`;
+
+            standings.forEach((s, idx) => {
+                let rank = idx + 1;
+                let rowBg = "";
+                let rankBadge = `<span class="w-6 h-6 rounded-lg bg-slate-900 text-slate-400 font-semibold text-xs flex items-center justify-center mx-auto">${rank}</span>`;
+                
+                if (rank <= 3) {
+                    // 1st-3rd: straight to the playoff semi-finals
+                    rankBadge = `<span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold text-xs flex items-center justify-center mx-auto shadow-sm">${rank}</span>`;
+                    rowBg = "bg-emerald-500/5 hover:bg-emerald-500/10";
+                } else if (rank <= PLAYOFF_SPOTS) {
+                    // 4th-5th: playoff quarter-final
+                    rankBadge = `<span class="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/40 font-bold text-xs flex items-center justify-center mx-auto shadow-sm">${rank}</span>`;
+                    rowBg = "bg-sky-500/5 hover:bg-sky-500/10";
+                } else {
+                    rowBg = "hover:bg-slate-900/40";
+                }
+                const separator = rank === PLAYOFF_SPOTS ? 'border-b-2 border-b-amber-500/40' : 'border-b border-slate-800/40';
+                const statusTag = s.played === 0 ? '' : s.clinched
+                    ? `<span title="Qualifié pour les playoffs" class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Q</span>`
+                    : s.eliminated ? `<span title="Ne peut plus se qualifier" class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-500 border border-slate-700">E</span>` : '';
+
+                tbody.innerHTML += `
+                    <tr class="${rowBg} transition-colors ${separator}">
+                        <td class="py-2.5 sm:py-3 px-1.5 sm:px-3 text-center">${rankBadge}</td>
+                        <td class="py-2.5 sm:py-3 px-1.5 sm:px-4 font-semibold text-white">
+                            <div class="flex items-center gap-2 sm:gap-2.5">
+                                ${teamLogoHtml(getTeam(s.id), 'w-6 h-6 rounded-md text-[9px]')}
+                                <span class="leading-tight sm:truncate sm:max-w-xs">${s.name}</span>
+                                ${statusTag}
+                            </div>
+                        </td>
+                        <td class="py-2.5 sm:py-3 px-1 sm:px-2 text-center text-slate-300 font-normal">${s.played}</td>
+                        <td class="py-2.5 sm:py-3 px-1 sm:px-2 text-center text-slate-300 font-normal">${s.won}</td>
+                        <td class="py-2.5 sm:py-3 px-1 sm:px-2 text-center text-slate-300 font-normal">${s.draw}</td>
+                        <td class="py-2.5 sm:py-3 px-1 sm:px-2 text-center text-slate-300 font-normal">${s.lost}</td>
+                        <td class="py-2.5 sm:py-3 px-1 sm:px-2 text-center text-xs font-semibold ${s.diff > 0 ? 'text-emerald-400' : s.diff < 0 ? 'text-rose-400' : 'text-slate-400'}">${s.diff > 0 ? '+' + s.diff : s.diff}</td>
+                        <td class="py-2.5 sm:py-3 px-1.5 sm:px-3 text-center font-black text-emerald-400 text-sm sm:text-base">${s.points}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // --- MATCHES RENDER & EDIT ---
+        function journeeLabel(journee) {
+            const phase = PHASES.find(p => p.key === journee.replace(/\d+$/, ''));
+            return `Journée ${journee} · ${phase.label.replace('Phase ', '')}`;
+        }
+
+        function renderMatches() {
+            const container = document.getElementById('matches-container');
+            container.innerHTML = '';
+            
+            const filterJournee = document.getElementById('filter-journee').value;
+            const filterEquipe = document.getElementById('filter-equipe').value;
+
+            let filtered = CHAMPIONSHIP_MATCHES.filter(match => {
+                if (filterJournee !== 'all' && match.journee !== filterJournee) return false;
+                if (filterEquipe !== 'all' && match.home !== filterEquipe && match.away !== filterEquipe) return false;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-500 text-sm">Aucun match trouvé pour ce filtre.</div>`;
+                return;
+            }
+
+            JOURNEES.forEach(jKey => {
+                const jMatches = filtered.filter(match => match.journee === jKey);
+                if (jMatches.length === 0) return;
+                const allOfJournee = CHAMPIONSHIP_MATCHES.filter(match => match.journee === jKey);
+                const playing = new Set(allOfJournee.flatMap(match => [match.home, match.away]));
+                const exempt = TEAMS.filter(t => !playing.has(t.id)).map(t => t.name).join(', ');
+
+                let html = `
+                    <div class="flex items-end justify-between gap-2 pt-2 pb-1 border-b border-slate-800/80">
+                        <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">${journeeLabel(jKey)}</span>
+                        ${exempt ? `<span class="text-[10px] text-slate-500">Exempt : ${exempt}</span>` : ''}
+                    </div>`;
+
+                jMatches.forEach(match => {
+                    const homeTeam = getTeam(match.home);
+                    const awayTeam = getTeam(match.away);
+                    const r = getResult(match.id);
+
+                    html += `
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 shadow-sm hover:border-slate-700 transition space-y-2">
+                            <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-[11px] sm:text-[10px] text-slate-500 font-medium">
+                                <span class="capitalize">${formatDate(match.date)}</span><span>•</span><span>${KICKOFF}</span><span>•</span><span><i class="fa-solid fa-location-dot"></i> ${VENUES[match.venue]}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex-1 min-w-0 flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-1 sm:gap-2 font-medium text-xs sm:text-sm text-slate-200">
+                                    <span class="text-center sm:text-right leading-tight line-clamp-2 sm:truncate">${homeTeam.name}</span>
+                                    ${teamLogoHtml(homeTeam, 'w-6 h-6 rounded-md text-[9px]')}
+                                </div>
+                                <div class="flex items-center gap-1.5 flex-shrink-0">
+                                    ${isAdmin ? `
+                                        ${scoreInputHtml(match.id, 'home', r?.homeScore)}
+                                        <span class="text-slate-600 font-bold">-</span>
+                                        ${scoreInputHtml(match.id, 'away', r?.awayScore)}
+                                    ` : `
+                                        <span class="px-3 py-1 bg-slate-950 rounded-lg border border-slate-800 font-extrabold text-sm text-emerald-400 min-w-[55px] text-center">
+                                            ${r ? `${r.homeScore} - ${r.awayScore}` : 'vs'}
+                                        </span>
+                                    `}
+                                </div>
+                                <div class="flex-1 min-w-0 flex flex-col sm:flex-row items-center sm:justify-start gap-1 sm:gap-2 font-medium text-xs sm:text-sm text-slate-200">
+                                    ${teamLogoHtml(awayTeam, 'w-6 h-6 rounded-md text-[9px]')}
+                                    <span class="text-center sm:text-left leading-tight line-clamp-2 sm:truncate">${awayTeam.name}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML += html;
+            });
+        }
+
+        // --- KNOCKOUT LOGIC (CUP & PLAYOFFS) ---
+        // Winner by score, then by penalty shoot-out when the match ends in a draw
+        function knockoutOutcome(matchId, homeId, awayId) {
+            const r = getResult(matchId);
+            if (!r || !homeId || !awayId) return { winner: null, loser: null };
+            let homeWins = null;
+            if (r.homeScore !== r.awayScore) homeWins = r.homeScore > r.awayScore;
+            else if (r.homePens !== null && r.awayPens !== null && r.homePens !== r.awayPens) homeWins = r.homePens > r.awayPens;
+            if (homeWins === null) return { winner: null, loser: null };
+            return homeWins ? { winner: homeId, loser: awayId } : { winner: awayId, loser: homeId };
+        }
+
+        // Resolves every match of a bracket in order: { matchId: { homeId, awayId, winner, loser } }
+        function resolveBracket(matches, seeds = []) {
+            const resolved = {};
+            const slotTeam = slot => {
+                if (slot.team) return slot.team;
+                if (slot.seed) return seeds[slot.seed - 1] || null;
+                if (slot.winner) return resolved[slot.winner].winner;
+                if (slot.loser) return resolved[slot.loser].loser;
+                return null;
+            };
+            matches.forEach(match => {
+                const homeId = slotTeam(match.home);
+                const awayId = slotTeam(match.away);
+                resolved[match.id] = { homeId, awayId, ...knockoutOutcome(match.id, homeId, awayId) };
+            });
+            return resolved;
+        }
+
+        function slotPlaceholder(slot, matches) {
+            if (slot.seed) return `${slot.seed}${slot.seed === 1 ? 'er' : 'e'} du championnat`;
+            const ref = matches.find(x => x.id === (slot.winner || slot.loser));
+            return `${slot.winner ? 'Vainqueur' : 'Perdant'} ${ref.code}`;
+        }
+
+        function renderKnockoutCard(match, matches, state, opts = {}) {
+            const r = getResult(match.id);
+            const editable = isAdmin && state.homeId && state.awayId;
+            const isDraw = r && r.homeScore === r.awayScore;
+            const borderStyle = opts.highlight ? "border-amber-500/60 bg-amber-500/5" : "border-slate-800 bg-slate-900";
+
+            const row = (side, teamId, slot) => {
+                const team = teamId ? getTeam(teamId) : null;
+                const isWinner = state.winner && state.winner === teamId;
+                const isLoser = state.loser && state.loser === teamId;
+                const score = r ? r[side + 'Score'] : null;
+                const pens = r && isDraw ? r[side + 'Pens'] : null;
+                const label = team
+                    ? `${teamLogoHtml(team, 'w-5 h-5 rounded text-[8px]')}<span class="truncate">${team.name}</span>${opts.provisional && slot.seed ? `<span class="text-[9px] font-semibold text-amber-300/80">(${slot.seed}${slot.seed === 1 ? "er" : "e"} prov.)</span>` : ''}`
+                    : `<span class="truncate italic text-slate-500">${slotPlaceholder(slot, matches)}</span>`;
+                return `
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-semibold flex items-center gap-2 min-w-0 flex-1 ${isLoser ? 'text-slate-500' : 'text-white'}">
+                            ${label}
+                            ${isWinner ? '<i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i>' : ''}
+                        </span>
+                        ${editable ? `
+                            <div class="flex items-center gap-1">
+                                ${isDraw ? scoreInputHtml(match.id, side + '_pens', pens, 'w-8 h-7 text-[10px]') : ''}
+                                ${scoreInputHtml(match.id, side, score, 'w-9 h-8 text-xs')}
+                            </div>
+                        ` : `
+                            <span class="text-center font-extrabold text-sm ${isLoser ? 'text-slate-500' : 'text-emerald-400'}">
+                                ${score !== null ? score : '-'}${pens !== null ? `<span class="text-[10px] font-semibold text-slate-400"> (${pens})</span>` : ''}
+                            </span>
+                        `}
+                    </div>`;
+            };
+
+            return `
+                <div class="border ${borderStyle} rounded-2xl p-4 shadow-sm space-y-3">
+                    <div class="flex flex-wrap items-center justify-between text-xs text-slate-400 font-semibold gap-x-2 gap-y-0.5">
+                        <span>${match.round}</span>
+                        <span class="text-[10px] text-slate-500 font-medium text-right capitalize">${formatDate(match.date)} · ${KICKOFF}</span>
+                    </div>
+                    <div class="space-y-2">
+                        ${row('home', state.homeId, match.home)}
+                        ${row('away', state.awayId, match.away)}
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] sm:text-[10px] text-slate-500">
+                        <span><i class="fa-solid fa-location-dot"></i> ${VENUES[match.venue]}</span>
+                        ${editable && isDraw ? '<span class="text-amber-300">Égalité : saisir les tirs au but (petites cases)</span>' : isDraw && !state.winner ? '<span class="text-amber-300">Tirs au but à saisir</span>' : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function winnerBanner(text, teamId, color = 'amber') {
+            if (!teamId) return '';
+            return `<div class="p-3 rounded-xl bg-${color}-500/20 border border-${color}-500/40 text-center font-bold text-${color}-300 text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-trophy text-${color}-400"></i> ${text} : ${getTeam(teamId).name}</div>`;
+        }
+
+        function renderCup() {
+            const state = resolveBracket(CUP_MATCHES);
+            const card = (id, opts) => renderKnockoutCard(CUP_MATCHES.find(x => x.id === id), CUP_MATCHES, state[id], opts);
+            document.getElementById('cup-round-prelim').innerHTML = card('CUP_8A');
+            document.getElementById('cup-round-quarts').innerHTML = ['CUP_4A', 'CUP_4B', 'CUP_4C', 'CUP_4D'].map(id => card(id)).join('');
+            document.getElementById('cup-round-demis').innerHTML = ['CUP_2A', 'CUP_2B'].map(id => card(id)).join('');
+            document.getElementById('cup-round-finale').innerHTML = card('CUP_F', { highlight: true }) + winnerBanner('Vainqueur de la Coupe', state.CUP_F.winner);
+        }
+
+        // --- PLAYOFFS: refreshed from the live standings after every journée ---
+        function renderPlayoffs() {
+            const standings = calculateStandings();
+            const progress = getSeasonProgress();
+            const started = progress.played > 0;
+            const seeds = started ? standings.slice(0, PLAYOFF_SPOTS).map(s => s.id) : [];
+            const provisional = !progress.finished;
+
+            document.getElementById('playoffs-progress').textContent = `${progress.played} / ${progress.total}`;
+            const next = JOURNEES.find(j => CHAMPIONSHIP_MATCHES.some(x => x.journee === j && !isChampionshipPlayed(x)));
+            document.getElementById('playoffs-status').textContent = !started
+                ? 'En attente des premiers résultats'
+                : progress.finished ? 'Classement définitif : qualifiés connus'
+                : `Provisoire${next ? ` · prochaine journée à jouer : ${next}` : ''}`;
+
+            // Seeds cards
+            const seedRole = rank => rank === 1 ? 'Qualifié direct en 1/2 (vs vainqueur du 1/4)'
+                : rank <= 3 ? '1/2 finale : 2e vs 3e'
+                : '1/4 de finale : 4e vs 5e';
+            document.getElementById('playoffs-seeds').innerHTML = standings.slice(0, PLAYOFF_SPOTS).map((s, idx) => {
+                const rank = idx + 1;
+                const team = getTeam(s.id);
+                const confirmed = started && (s.clinched || progress.finished);
+                return `
+                    <div class="bg-slate-900 border ${rank <= 3 ? 'border-emerald-500/40' : 'border-sky-500/40'} rounded-xl p-3 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black ${rank <= 3 ? 'text-emerald-400' : 'text-sky-400'}">${rank}${rank === 1 ? 'er' : 'e'}</span>
+                            ${!started ? '' : confirmed
+                                ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Qualifié</span>'
+                                : '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">Provisoire</span>'}
+                        </div>
+                        ${started ? `
+                            <div class="flex items-center gap-2 min-w-0">
+                                ${teamLogoHtml(team, 'w-8 h-8 rounded-lg text-[10px]')}
+                                <div class="min-w-0">
+                                    <div class="text-sm font-bold text-white truncate">${team.name}</div>
+                                    <div class="text-[11px] text-slate-400">${s.points} pts · ${s.diff > 0 ? '+' + s.diff : s.diff}</div>
+                                </div>
+                            </div>
+                        ` : `<div class="text-sm italic text-slate-500 h-8 flex items-center">À déterminer</div>`}
+                        <div class="text-[10px] text-slate-500">${seedRole(rank)}</div>
+                    </div>`;
+            }).join('');
+
+            // Teams still chasing a playoff spot
+            const fifth = standings[PLAYOFF_SPOTS - 1];
+            document.getElementById('playoffs-chasers').innerHTML = !started ? '' : `
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-semibold text-slate-300">Hors qualification :</span>
+                    ${standings.slice(PLAYOFF_SPOTS).map((s, idx) => `
+                        <span class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 ${s.eliminated ? 'text-slate-600 line-through' : ''}">
+                            ${PLAYOFF_SPOTS + idx + 1}e ${getTeam(s.id).name} · ${s.points} pts ${s.eliminated ? '(éliminé)' : `(${s.points - fifth.points} pts du 5e)`}
+                        </span>
+                    `).join('')}
+                </div>`;
+
+            const state = resolveBracket(PLAYOFF_MATCHES, seeds);
+            const card = (id, opts = {}) => renderKnockoutCard(PLAYOFF_MATCHES.find(x => x.id === id), PLAYOFF_MATCHES, state[id], { provisional, ...opts });
+            document.getElementById('playoffs-round-quart').innerHTML = card('PO_4A');
+            document.getElementById('playoffs-round-demis').innerHTML = ['PO_2A', 'PO_2B'].map(id => card(id)).join('');
+            document.getElementById('playoffs-round-finale').innerHTML = card('PO_F', { highlight: true })
+                + winnerBanner('Champion 2026-2027', state.PO_F.winner)
+                + card('PO_PF')
+                + winnerBanner('3e place', state.PO_PF.winner, 'emerald');
+        }
+
+        function resetCupScores() {
+            clearResults('CUP_', "Voulez-vous vraiment réinitialiser tous les scores de la coupe ?");
+        }
+
+        function resetPlayoffScores() {
+            clearResults('PO_', "Voulez-vous vraiment réinitialiser tous les scores des playoffs ?");
+        }
+        // --- ADMIN AUTH & PERSISTENCE ---
+        function toggleAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            if (isAdmin) {
+                // Open panel directly if already admin
+                document.getElementById('admin-login-view').classList.add('hidden');
+                document.getElementById('admin-panel-view').classList.remove('hidden');
+            } else {
+                document.getElementById('admin-login-view').classList.remove('hidden');
+                document.getElementById('admin-panel-view').classList.add('hidden');
+                document.getElementById('admin-password-input').value = '';
+                document.getElementById('admin-error-msg').classList.add('hidden');
+            }
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        // The password is checked by the server: it never appears in this page
+        async function verifyAdminPassword() {
+            const pwd = document.getElementById('admin-password-input').value;
+            const errorMsg = document.getElementById('admin-error-msg');
+            errorMsg.classList.add('hidden');
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pwd })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.token) {
+                    errorMsg.textContent = data.error || "Mot de passe incorrect.";
+                    errorMsg.classList.remove('hidden');
+                    return;
+                }
+                adminToken = data.token;
+                sessionStorage.setItem('moketa_admin_token', adminToken);
+                document.getElementById('admin-password-input').value = '';
+                document.getElementById('admin-modal').classList.add('hidden');
+                document.getElementById('admin-modal').classList.remove('flex');
+                startAdminSession();
+            } catch (err) {
+                errorMsg.textContent = "Connexion impossible. Réessayez plus tard.";
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        async function restoreAdminSession() {
+            if (!adminToken) return;
+            try {
+                const res = await fetch('/api/admin/login', { headers: { 'Authorization': `Bearer ${adminToken}` } });
+                const data = await res.json();
+                if (data.valid) startAdminSession();
+                else endAdminSession();
+            } catch (err) {
+                // Keep the token; the session is retried on next load
+            }
+        }
+
+        function startAdminSession() {
+            isAdmin = true;
+            updateAdminUI();
+            renderAdminLogos();
+            renderAll();
+        }
+
+        function endAdminSession() {
+            isAdmin = false;
+            adminToken = null;
+            sessionStorage.removeItem('moketa_admin_token');
+            updateAdminUI();
+            renderAll();
+        }
+
+        function logoutAdmin() {
+            endAdminSession();
+            toggleAdminModal();
+        }
+
+        function updateAdminUI() {
+            const badgeBtn = document.getElementById('admin-badge-btn');
+            const lockIcon = document.getElementById('admin-lock-icon');
+            const badgeText = document.getElementById('admin-badge-text');
+            const statusBadge = document.getElementById('admin-status-badge');
+            const resetCupBtn = document.getElementById('reset-cup-btn');
+            const resetPlayoffsBtn = document.getElementById('reset-playoffs-btn');
+
+            if (isAdmin) {
+                badgeBtn.className = "flex items-center gap-2 px-3 sm:px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-bold border transition-all bg-emerald-600/20 border-emerald-500 text-emerald-400 shadow-lg";
+                lockIcon.className = "fa-solid fa-lock-open";
+                badgeText.textContent = "Admin Connecté";
+                statusBadge.classList.remove('hidden');
+                resetCupBtn.classList.remove('hidden');
+                resetPlayoffsBtn.classList.remove('hidden');
+            } else {
+                badgeBtn.className = "flex items-center gap-2 px-3 sm:px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-bold border transition-all bg-slate-900 border-slate-700 text-slate-300 hover:border-emerald-500 hover:text-emerald-400";
+                lockIcon.className = "fa-solid fa-lock";
+                badgeText.textContent = "Mode Admin";
+                statusBadge.classList.add('hidden');
+                resetCupBtn.classList.add('hidden');
+                resetPlayoffsBtn.classList.add('hidden');
+            }
+        }
+
+        function exportDataJSON() {
+            const exportObj = {
+                results,
+                version: "2026-2027"
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "collectif_moketa_ufolep_2026.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Restores a previous export: every result is saved back to the shared database
+        function importDataJSON(event) {
+            const file = event.target.files[0];
+            event.target.value = '';
+            if (!file) return;
+            const fileReader = new FileReader();
+            fileReader.readAsText(file, "UTF-8");
+            fileReader.onload = async function(e) {
+                let imported;
+                try {
+                    imported = JSON.parse(e.target.result);
+                } catch (err) {
+                    alert("Erreur lors de la lecture du fichier JSON.");
+                    return;
+                }
+                if (!imported.results || typeof imported.results !== 'object') {
+                    alert("Format de fichier JSON invalide (export d'une ancienne version ?).");
+                    return;
+                }
+                let failed = 0;
+                for (const [matchId, r] of Object.entries(imported.results)) {
+                    const res = await fetch(`/api/results/${encodeURIComponent(matchId)}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                        body: JSON.stringify(r)
+                    }).catch(() => null);
+                    if (!res || !res.ok) failed++;
+                }
+                await loadResults();
+                alert(failed ? `Import terminé avec ${failed} erreur(s).` : "Données importées avec succès !");
+                toggleAdminModal();
+            };
+        }
+
+        async function resetAllData() {
+            const done = await clearResults(null, "Êtes-vous sûr de vouloir réinitialiser tous les résultats du championnat, de la coupe et des playoffs ?");
+            if (done) {
+                alert("Données réinitialisées.");
+                toggleAdminModal();
+            }
+        }
+    </script>
+</body>
+</html>
